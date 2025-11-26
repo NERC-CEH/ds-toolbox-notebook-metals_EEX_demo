@@ -13,12 +13,12 @@ author: "Primary Contact: [Dr. Michael Tso](https://www.ceh.ac.uk/staff/michael-
 toc: true
 toc-expand: 2
 ---
+
 <!-- | Notebook Top-to-Bottom Runtime ~ 5 Minutes -->
 
 <!-- {bdg-link-info}Reference [1] <https://link.springer.com/article/10.1007/s00216-015-8681-7> {bdg-link-info}Reference [2] <https://doi.org/10.1016/j.trac.2023.116944> {bdg-link-info}Reference [3] <https://doi.org/10.1016/j.trac.2019.04.008> {bdg-link-info}Reference [4] <https://pubmed.ncbi.nlm.nih.gov/36174727/> {bdg-link-info}DSFP Homepage <https://dsfp.norman-data.eu/> {bdg-link-info}Notebook Repository <https://github.com/NERC-CEH/DSFP-PyExplorer> {bdg-warning-line}Ongoing Development -->
 
-
-::: {.callout-tip}
+::: callout-tip
 ## Challenge
 
 While polltants know no boundaries, pollution analysis are often limited to a single compartment. By integrating data across compartments, we can better understand their effects and responses holistically.
@@ -26,36 +26,26 @@ While polltants know no boundaries, pollution analysis are often limited to a si
 However, data from many different sources are difficult to discover and integrate. The purpose of this notebook and the UK Environmental Exposure (UK-EEX) Hub is to make it easier to discover, process, analyse, and visualise the wealth of data regarding environmental pressures and responses, particularly related to chemical substances.
 :::
 
-::: {.callout-tip}
+::: callout-tip
 ## Approach
+
 This notebook demonstrates various ways to integrate data from various compartments from a single substance. Cadmium (Cd), a heavy metal, is used as an example. It shows various methods of combining gridded and point data, and make them ready for stastical and machine learning analysis.
 :::
 
 ::: {.callout-note collapse="true"}
 ## Downloading data
 
-The following datasets are used in the is notebook:
-- Otter data: [Biological characteristics, liver metal concentrations, habitat biogeochemistry and habitat contamination sources of UK otters (2006-2017)](https://catalogue.ceh.ac.uk/documents/0fbb2c90-5b54-427a-a083-55c022802a80), also available on Datalabs asset repo
-- [UK NUTS regions](https://geoportal.statistics.gov.uk/datasets/e9cfbf2e478a481bb367eb2f2891d504_0/about)
-- [EU topsoils Cadmium](https://esdac.jrc.ec.europa.eu/content/cadmium-topsoils-european-union)
-- [Environmental Agency Water Quality Archive]('https://environment.data.gov.uk/water-quality/view/landing'): mean Cd data aggregate from the sensor integration tool API mentioned below.
+The following datasets are used in the is notebook: - Otter data: [Biological characteristics, liver metal concentrations, habitat biogeochemistry and habitat contamination sources of UK otters (2006-2017)](https://catalogue.ceh.ac.uk/documents/0fbb2c90-5b54-427a-a083-55c022802a80), also available on Datalabs asset repo - [UK NUTS regions](https://geoportal.statistics.gov.uk/datasets/e9cfbf2e478a481bb367eb2f2891d504_0/about) - [EU topsoils Cadmium](https://esdac.jrc.ec.europa.eu/content/cadmium-topsoils-european-union) - [Environmental Agency Water Quality Archive]('https://environment.data.gov.uk/water-quality/view/landing'): mean Cd data aggregate from the sensor integration tool API mentioned below.
 
-
-In addition, the following portals are mentioned:
-- [Hydrological sensor data integration tool](https://hydrosensordata.ceh.ac.uk/?dist=10&latitude=52&longitude=-1)
-- [National Air Emissions Inventory (NAEI) maps](https://naei.energysecurity.gov.uk/emissionsapp/)
-
-
-
-
+In addition, the following portals are mentioned: - [Hydrological sensor data integration tool](https://hydrosensordata.ceh.ac.uk/?dist=10&latitude=52&longitude=-1) - [National Air Emissions Inventory (NAEI) maps](https://naei.energysecurity.gov.uk/emissionsapp/)
 :::
-
 
 ::: {.callout-caution collapse="true"}
 ## Computational demands
 
 No heavy computation is included in this notebook.
 :::
+
 ## Metals Pollution
 
 Heavy metals are natural constituents of the Earth's crust. They are stable and cannot be degraded or destroyed, and therefore they tend to accumulate in soils and sediments. However, human activities have drastically altered the biochemical and geochemical cycles and balance of some heavy metals. The principal man-made sources of heavy metals are industrial point sources, e.g. mines, foundries and smelters, and diffuse sources such as combustion by-products, traffic, etc. Relatively volatile heavy metals and those that become attached to air-borne particles (particulates) can be widely dispersed throughout the atmosphere, often being deposited thousands of miles from the site of initial release. In general, the smaller and lighter a particle is, the longer it will stay in the air. Larger particles (greater than 10 micrometers (µm) in diameter) tend to settle to the ground by gravity in a matter of hours whereas the smallest particles (less than 1µm in diameter ) can stay in the atmosphere for weeks and are mostly removed by precipitation.
@@ -92,11 +82,11 @@ Here are some example screenshots of web portals:
 
 ![NAEI portal.](img/NAEI_Cd.png){.lightbox}
 
-![Soil and PBMS data for metals pollution.](img/Screenshot%202025-08-13%20150808.png){.lightbox}
+![Soil and PBMS data for metals pollution.](img/Screenshot_2025-08-13_150808.png){.lightbox}
 
 <!-- ![Casual loop diagram for metals pollution.](img/Picture1.jpg){.lightbox} -->
 
-![River flow data from portal](img/Screenshot%202025-08-13%20160337.png){.lightbox}
+![River flow data from portal](img/Screenshot_2025-08-13_60337.png){.lightbox}
 
 ```{r}
 #| echo: false
@@ -365,6 +355,7 @@ Cd_grid <- tm_shape(eng_wales) +
 
 Cd_grid
 ```
+
 ```{r}
 #| fig-cap: Repeat for water quality
 
@@ -379,7 +370,6 @@ resp <- st_intersection(st_as_sf(v), Pred_loc)
 resp$pred <- log10(resp$Cd)
 pred_riv <- terra::rasterize(resp, grid, field = "pred", fun = "mean")
 ```
-
 
 ```{r}
 #| fig-cap: Data cube for cadmium data across compartments
@@ -455,7 +445,6 @@ tm_shape(r_coarse_sf2_tilt) +
 # plot(a)
 ```
 
-
 ```{r}
 # method 2: inverse distance weighting
 # library(gstat)
@@ -466,6 +455,7 @@ tm_shape(r_coarse_sf2_tilt) +
 # tm_shape(pred) + tm_raster(alpha = 0.6, palette = "viridis")
 
 ```
+
 ```{r}
 # 
 # res <- gstat(formula = Cd ~ 1, locations = otter_metals,
@@ -480,7 +470,6 @@ tm_shape(r_coarse_sf2_tilt) +
 # pred <- terra::rasterize(resp, grid, field = "pred", fun = "mean")
 # tm_shape(pred) + tm_raster(alpha = 0.6, palette = "viridis")
 ```
-
 
 <!-- -   Machine learning -->
 
@@ -524,15 +513,10 @@ tm_shape(r_coarse_sf2_tilt) +
 
 <!-- Contamination in the tissues of the bee, fish, EA water invertebrate (pick one chemical/metal)?? – water, air, land AND in ‘this location’, this is all the exposure available (place-based, health links) -\> P -->
 
-
 ## Adding context to metals data: linking chemical speciation model and predict toxic effects to biota
 
 Sometimes simply knowing the levels of chemicals is not sufficient. We need to know their chemcial **forms** (e.g. free ions, complexes) at equilibrium. For example, we need to know the speciation of filterable metal(s) in surface water to model their toxic effects on biota.
 
-Diagram demonstrating the chemical equilibrium of different substance in the environment. 
-![Diagram demonstrating the chemical equilibrium of different substance in the environment. 
-.](img/WHAM eqm.png){.lightbox}
-
-
+Diagram demonstrating the chemical equilibrium of different substance in the environment. ![Diagram demonstrating the chemical equilibrium of different substance in the environment. .](img/WHAM_eqm.png){.lightbox}
 
 <!-- Notes: to convert to Jupyter notebook: run `quarto convert metals_EEX_demo.qmd` -->
