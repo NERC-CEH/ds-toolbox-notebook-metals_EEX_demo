@@ -101,7 +101,7 @@ library(dplyr)
 library(sf)
 library(cols4all)  # for flipping colour bar in tmap
 
-dataset_path <- '/data/notebooks/rstudio-visualtool/datasets/'
+dataset_path <- 'temp/datasets'
 
 
 ```
@@ -117,8 +117,7 @@ tmap_mode("plot")
 #     )
 #   )
 
-cd_NAEI_raster <-rast(file.path(dataset_path,'NAEI_maps/naei23_cd_2023/GeoTIFF_layers/totalcd23_2023.tif'))
-
+cd_NAEI_raster <-rast(file.path(dataset_path,'NAEI_maps/naei_cd_2023/GeoTIFF_layers/totalcd23_2023.tif'))
 cd_EUSO_raster <-rast(file.path('data/topsoil_Cd_UK_small.tif'))
 
 NAEI_tmap <- 
@@ -186,17 +185,22 @@ But how are air and soil pollution hotspots co-located? Here we can use an integ
 
 ```{r}
 
+stevens.bluered <- matrix(c("#E8E8E8", "#E4ACAC", "#C85A5A",
+                 "#B0D5DF", "#AD9EA5", "#985356",
+                 "#64ACBE", "#627F8C", "#574249"),
+                 byrow = TRUE, ncol = 3)
+
 tm_shape(r_stack) + 
     tm_raster(
         col = tm_vars(c("var2", "var1"), multivariate = TRUE),
         col.scale = tm_scale_bivariate(
         scale1 = tm_scale_intervals(style = "quantile", n = 3, labels = c("L", "M", "H")),
         scale2 = tm_scale_intervals(style = "quantile", n = 3, labels = c("L", "M", "H")),
-        values = "//cols4all.bu_br_bivs"),
+        values =  "stevens.pinkgreen"), # 97.94% colour-blind friendly
         col.legend = tm_legend_bivariate(
             position = c("top", "right"),
-            xlab = "Air",
-            ylab = "Soil",
+            xlab = "Soil",
+            ylab = "Air",
             xlab.size = 1,
             ylab.size = 1,
             item.r = 0,
@@ -214,7 +218,8 @@ tm_shape(r_stack) +
 ## Predatory birds and otters data
 
 ```{r}
-otter_metals <- read_csv('/assets/bio-xter-liver-metal-habitat-uk-otters-2006-2017-v1/data/Concentrations_of_inorganic_elements_in_UK_otter_livers_2006–2017.csv')
+# otter_metals <- read_csv('/assets/bio-xter-liver-metal-habitat-uk-otters-2006-2017-v1/data/Concentrations_of_inorganic_elements_in_UK_otter_livers_2006–2017.csv')
+otter_metals <- read_csv('data/Concentrations_of_inorganic_elements_in_UK_otter_livers_2006–2017.csv')
 otter_metals[,c('long','lat')] <-sf_project(from = st_crs(27700), to = st_crs(4326),  otter_metals[,c('X','Y')])
 
 
@@ -275,11 +280,11 @@ tm_shape(r_stack) +
         col.scale = tm_scale_bivariate(
         scale1 = tm_scale_intervals(style = "quantile", n = 3, labels = c("L", "M", "H")),
         scale2 = tm_scale_intervals(style = "quantile", n = 3, labels = c("L", "M", "H")),
-        values = "//cols4all.bu_br_bivs"),
+        values =  "stevens.pinkgreen"), # 97.94% colour-blind friendly
         col.legend = tm_legend_bivariate(
             position = c("top", "right"),
-            xlab = "Air",
-            ylab = "Soil",
+            xlab = "Soil",
+            ylab = "Air",
             xlab.size = 1,
             ylab.size = 1,
             item.r = 0,
@@ -290,19 +295,16 @@ tm_shape(r_stack) +
 tm_shape(st_as_sf(riv_metals, coords = c("lon", "lat"), crs = 4326) )+
   tm_symbols(
     size = "Cd_mean",
-    fill = "purple",
-    # fill.legend = tm_legend(
-    #   title = "Mean Cd (mg/L)",
-    #   show = TRUE
-    # ),
     col = "black",
+    fill = "#FEFE62",
+  #  shape = 1,
     lwd = 1,
     size.scale = tm_scale(values.scale = 2) 
   ) +
   tm_shape(st_as_sf(otter_metals, coords = c("long", "lat"), crs = 4326) )+
   tm_symbols(
     size = "Cd",
-    fill = "maroon",
+    fill = "black", #"#CC79A7",
     col = "black",
     lwd = 1,
     size.scale = tm_scale(values.scale = 2)
@@ -456,6 +458,5 @@ tm_shape(r_coarse_sf2_tilt) +
   tm_layout(legend.show=FALSE, frame = TRUE, asp = 0)
 
 ```
-
 
 <!-- Notes: to convert to Jupyter notebook: run `quarto convert metals_EEX_demo.qmd` -->
