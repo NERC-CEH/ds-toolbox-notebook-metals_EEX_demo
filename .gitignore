@@ -2,7 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
-renv/*
 CopyOf*
 *_files/*
 data/NUTS*
