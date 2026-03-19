@@ -1,6 +1,4 @@
 #!/bin/bash
 
-cd ..
-
 R -e "if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv')"
 R -e "renv::restore(confirm = FALSE)"
